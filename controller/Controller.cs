@@ -347,9 +347,9 @@ namespace TestTask.controller
                 singleton.GetInstance().Close();
                 ShowMainTable(dataGridView);
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Пока есть заказы у клиента, удалить нельзя!");
             }
           
         }
