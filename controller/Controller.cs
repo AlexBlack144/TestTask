@@ -187,9 +187,12 @@ namespace TestTask.controller
         {
             try 
             {
-                string commStr = $"INSERT INTO [db_work_test].[dbo].[OrderLines] ([Order_id], [Product_id],[Price],[Count],[Sum]) VALUES({order_id}, {product_id},{price},{count},{count * price});";
+                double sum = count * price;
+                string commStr = $"INSERT INTO [db_work_test].[dbo].[OrderLines] ([Order_id], [Product_id],[Price],[Count],[Sum]) VALUES({order_id}, {product_id},@price,{count},@sum);";
                 using (SqlCommand command = new SqlCommand(commStr, singleton.GetInstance()))
                 {
+                    command.Parameters.Add("@price", SqlDbType.Float).Value = Math.Round((float)price,2);
+                    command.Parameters.Add("@sum", SqlDbType.Float).Value = Math.Round((float)sum,2);
                     if (command.ExecuteNonQuery() > 0)
                     {
                         MessageBox.Show("Inserted in table 'OrderLines'!");
@@ -279,10 +282,12 @@ namespace TestTask.controller
         {
             try
             {
-
-                string commStr = $"UPDATE [db_work_test].[dbo].[OrderLines] SET [Product_id] = {id_product}, [Price] = {price}, [Count] = {count}, [Sum] = {price* count} WHERE  [db_work_test].[dbo].[OrderLines].[Id] = {id};";
+                double sum = price * count;
+                string commStr = $"UPDATE [db_work_test].[dbo].[OrderLines] SET [Product_id] = {id_product}, [Price] = @price, [Count] = {count}, [Sum] = @sum WHERE  [db_work_test].[dbo].[OrderLines].[Id] = {id};";
                 using (SqlCommand command = new SqlCommand(commStr, singleton.GetInstance()))
                 {
+                    command.Parameters.Add("@price", SqlDbType.Float).Value = Math.Round((float)price,2);
+                    command.Parameters.Add("@sum", SqlDbType.Float).Value = Math.Round((float)sum,2);
                     if (command.ExecuteNonQuery() > 0)
                         MessageBox.Show("Измененно!", "Сообщение", MessageBoxButtons.OK);
                     else
@@ -414,7 +419,7 @@ namespace TestTask.controller
                 return products;
             }
         }
-        public List<OrderLinesInnerJoin> SelectOrderLinesInnerJoin(int id)
+        public List<OrderLinesInnerJoin> SelectOrderLinesInnerJoin(int client_id)
         {
             List<OrderLinesInnerJoin> orderLines = new List<OrderLinesInnerJoin>();
             string commStr = "SELECT " +
@@ -429,7 +434,7 @@ namespace TestTask.controller
                 "INNER JOIN [db_work_test].[dbo].[Product] ON [db_work_test].[dbo].[OrderLines].Product_id = [db_work_test].[dbo].[Product].Id\r\n" +
                 "INNER JOIN [db_work_test].[dbo].[Order] ON [db_work_test].[dbo].[OrderLines].Order_id = [db_work_test].[dbo].[Order].Id\r\n" +
                 "INNER JOIN [db_work_test].[dbo].[Client] ON [db_work_test].[dbo].[Client].Id = [db_work_test].[dbo].[Order].Client_id\r\n" +
-                $"WHERE [db_work_test].[dbo].[Client].[Id] = {id}";
+                $"WHERE [db_work_test].[dbo].[Client].[Id] = {client_id}";
             using (SqlCommand command = new SqlCommand(commStr, singleton.GetInstance()))
             {
 
@@ -497,17 +502,17 @@ namespace TestTask.controller
                 MessageBox.Show(ex.Message);
             }
         }
-        public void ShowMoreTable(DataGridView dataGridView_more, int id)
+        public void ShowMoreTable(DataGridView dataGridView_more, int client_id)
         {
             try
             {
                 dataGridView_more.Rows.Clear();
  
-                for (int i = 0; i < SelectOrderLinesInnerJoin(id).Count; i++)
+                for (int i = 0; i < SelectOrderLinesInnerJoin(client_id).Count; i++)
                 {
                     dataGridView_more.Rows.Add();
-                    dataGridView_more.Rows[i].Cells[0].Value = SelectOrderLinesInnerJoin(id)[i].Id;
-                    dataGridView_more.Rows[i].Cells[1].Value = SelectOrderLinesInnerJoin(id)[i].Date;
+                    dataGridView_more.Rows[i].Cells[0].Value = SelectOrderLinesInnerJoin(client_id)[i].Id;
+                    dataGridView_more.Rows[i].Cells[1].Value = SelectOrderLinesInnerJoin(client_id)[i].Date;
                     DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell();
 
                     List<string> product_name = new List<string>();
@@ -517,11 +522,11 @@ namespace TestTask.controller
                     }
                     comboBoxCell.Items.AddRange(product_name.ToArray());
                     dataGridView_more[2, i] = comboBoxCell;
-                    dataGridView_more.Rows[i].Cells[2].Value = SelectOrderLinesInnerJoin(id)[i].Name_product;
+                    dataGridView_more.Rows[i].Cells[2].Value = SelectOrderLinesInnerJoin(client_id)[i].Name_product;
 
-                    dataGridView_more.Rows[i].Cells[3].Value = SelectOrderLinesInnerJoin(id)[i].Price;
-                    dataGridView_more.Rows[i].Cells[4].Value = SelectOrderLinesInnerJoin(id)[i].Count;
-                    dataGridView_more.Rows[i].Cells[5].Value = SelectOrderLinesInnerJoin(id)[i].Sum;
+                    dataGridView_more.Rows[i].Cells[3].Value = SelectOrderLinesInnerJoin(client_id)[i].Price;
+                    dataGridView_more.Rows[i].Cells[4].Value = SelectOrderLinesInnerJoin(client_id)[i].Count;
+                    dataGridView_more.Rows[i].Cells[5].Value = SelectOrderLinesInnerJoin(client_id)[i].Sum;
                     dataGridView_more.Rows[i].Cells[6].Value = "Удалить";
                     dataGridView_more.Rows[i].Cells[7].Value = "Изминить";
                 }

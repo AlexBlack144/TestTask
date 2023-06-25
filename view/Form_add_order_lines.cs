@@ -22,13 +22,20 @@ namespace TestTask.view
 
         private void button_add_Click(object sender, EventArgs e)
         {
-            controller.InsertOrder(id_client, DateTime.Now.ToString());
-            int id_order = controller.SelectOrder().Select(x => x.Id).Max();
-            int id_product = controller.SelectProductById(comboBox_product.SelectedItem.ToString()).Id;
-            double price = Convert.ToDouble(textBox_price.Text);
-            int count = Convert.ToInt32(textBox_count.Text);
-            controller.InsertOrderLines(id_order, id_product, price, count);
-            this.Close();
+            try
+            {
+                controller.InsertOrder(id_client, DateTime.Now.ToString());
+                int id_order = controller.SelectOrder().Select(x => x.Id).Max();
+                int id_product = controller.SelectProductById(comboBox_product.SelectedItem.ToString()).Id;
+                double price = Convert.ToDouble(textBox_price.Text.Replace(".",","));
+                int count = Convert.ToInt32(textBox_count.Text);
+                controller.InsertOrderLines(id_order, id_product, price, count);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void textBox_price_KeyPress(object sender, KeyPressEventArgs e)

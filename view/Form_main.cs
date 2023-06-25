@@ -117,16 +117,18 @@ namespace TestTask.view
                     int id = Convert.ToInt32(str_id);
                     
                     int id_product = controller.SelectProductById(dataGridView_more.Rows[e.RowIndex].Cells[2].Value.ToString()).Id;
-                    double price = Convert.ToDouble(dataGridView_more.Rows[e.RowIndex].Cells[3].Value.ToString());
+                    double price_full = Convert.ToDouble(dataGridView_more.Rows[e.RowIndex].Cells[3].Value.ToString());
+                    double price = Math.Round(price_full, 2);
+                    if(price<0){ price = price * -1; }
                     int count = Convert.ToInt32(dataGridView_more.Rows[e.RowIndex].Cells[4].Value.ToString());
-
+                    if (count < 0) { count = count * -1; }
                     controller.UpdateOrderLines(id, id_product, price, count, dataGridView_more, id_client);
 
                 }
             }
             catch
             {
-
+                MessageBox.Show("Not corect!");
             }
         }
 
@@ -144,13 +146,21 @@ namespace TestTask.view
 
         private void dataGridView_more_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.ColumnIndex == 5 && e.RowIndex != this.dataGridView_more.NewRowIndex)
+            try 
             {
-                if (dataGridView_more.Rows[e.RowIndex].Cells[5].Value != null)
+                if (e.ColumnIndex == 5 && e.RowIndex != this.dataGridView_more.NewRowIndex)
                 {
-                    double val3 = double.Parse(e.Value.ToString());
-                    e.Value = val3.ToString("N2");
+                    if (dataGridView_more.Rows[e.RowIndex].Cells[5].Value != null)
+                    {
+                        float val3 = float.Parse(e.Value.ToString());
+                        e.Value = val3.ToString("N2");
+                    }
                 }
+            }
+            catch 
+            {
+                MessageBox.Show("Not corect!");
+                controller.ShowMoreTable(dataGridView_more, id_client);
             }
         }
 
@@ -170,7 +180,7 @@ namespace TestTask.view
             {
                 if (dataGridView_main.Rows[e.RowIndex].Cells[3].Value != null)
                 {
-                    double val3 = double.Parse(e.Value.ToString());
+                    float val3 = float.Parse(e.Value.ToString());
                     e.Value = val3.ToString("N2");
                 }
             }
