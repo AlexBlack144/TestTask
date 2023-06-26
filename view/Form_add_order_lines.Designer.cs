@@ -109,7 +109,7 @@
             // 
             // comboBox_product
             // 
-            this.comboBox_product.FormattingEnabled = true;
+            this.comboBox_product.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_product.Location = new System.Drawing.Point(101, 143);
             this.comboBox_product.Name = "comboBox_product";
             this.comboBox_product.Size = new System.Drawing.Size(155, 21);
